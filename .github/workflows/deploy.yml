@@ -1,0 +1,26 @@
+name: Deploy to Minikube
+on: [push]
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and Push Frontend
+        run: |
+          docker build -f app/airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
+          docker push momin322/airfleet-frontend:latest
+      - name: Build and Push Backend
+        run: |
+          docker build -f app/airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
+          docker push momin322/airfleet-backend:latest
+      - name: Deploy to Minikube
+        run: |
+          kubectl apply -f k8s/mongodb-deployment.yaml -n airfleet
+          kubectl apply -f k8s/mongodb-service.yaml -n airfleet
+          kubectl apply -f k8s/backend-deployment.yaml -n airfleet
+          kubectl apply -f k8s/backend-service.yaml -n airfleet
+          kubectl apply -f k8s/frontend-deployment.yaml -n airfleet
+          kubectl apply -f k8s/frontend-service.yaml -n airfleet
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
