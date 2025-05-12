@@ -1,0 +1,132 @@
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif; /* Use a clean, modern font */
+}
+
+.auth-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/images/plane.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.auth-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker overlay for better contrast */
+}
+
+.auth-box {
+  background: rgba(255, 255, 255, 0.1); /* Transparent glass effect */
+  backdrop-filter: blur(10px); /* Blur effect for the glass design */
+  padding: 30px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Add a soft shadow */
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+  color: #fff; /* Bright text color for contrast */
+  font-size: 1.8rem;
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  border: none;
+  background: linear-gradient(135deg, #6b73ff, #000dff); /* Gradient background */
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 50px; /* Pill-shaped buttons */
+  color: #fff;
+  transition: 0.4s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 13, 255, 0.5);
+}
+
+.toggle-btn:hover {
+  background: linear-gradient(135deg, #000dff, #6b73ff); /* Reverse gradient on hover */
+  transform: scale(1.1); /* Slight scaling for interaction */
+}
+
+.toggle-btn.active {
+  background: linear-gradient(135deg, #06ff85, #00d468); /* Highlight active button */
+  color: #fff;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 25px; /* Rounded edges */
+  background-color: rgba(255, 255, 255, 0.2); /* Transparent input */
+  color: #fff; /* White text */
+  font-size: 1rem;
+  outline: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-container input::placeholder {
+  color: rgba(255, 255, 255, 0.7); /* Placeholder text in white with opacity */
+}
+
+.form-container button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  background: linear-gradient(135deg, #ff6a88, #ff0066); /* Vibrant button gradient */
+  color: white;
+  font-weight: bold;
+  border-radius: 25px; /* Rounded button */
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  box-shadow: 0 5px 15px rgba(255, 0, 102, 0.4); /* Button shadow */
+}
+
+.form-container button:hover {
+  background: linear-gradient(135deg, #ff0066, #ff6a88); /* Reverse gradient on hover */
+  transform: scale(1.05); /* Slight scaling for interaction */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-box {
+    max-width: 90%;
+  }
+
+  .toggle-buttons {
+    flex-direction: column;
+  }
+
+  .toggle-btn {
+    margin-bottom: 10px;
+  }
+}
