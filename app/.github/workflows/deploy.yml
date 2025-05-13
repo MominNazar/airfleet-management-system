@@ -30,9 +30,11 @@ name: Deploy to Minikube
              run: |
                echo "Setting up Docker environment..."
                sudo systemctl start docker
+               sudo systemctl enable docker
                sudo usermod -aG docker $USER || true
                newgrp docker || true
-               sudo chmod 666 /var/run/docker.sock
+               sudo chmod 666 /var/run/docker.sock || true
+               docker info --format '{{.ServerVersion}}' || { echo "Docker daemon not running"; exit 1; }
 
            - name: Build and Push Frontend Image
              run: |
