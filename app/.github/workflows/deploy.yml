@@ -37,16 +37,18 @@ name: Deploy to Minikube
                docker info --format '{{.ServerVersion}}' || { echo "Docker daemon not running"; exit 1; }
 
            - name: Build and Push Frontend Image
+             working-directory: app
              run: |
                echo "Building frontend image..."
-               docker build -f app/airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
+               docker build -f airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
                echo "Pushing frontend image..."
                docker push momin322/airfleet-frontend:latest
 
            - name: Build and Push Backend Image
+             working-directory: app
              run: |
                echo "Building backend image..."
-               docker build -f app/airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
+               docker build -f airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
                echo "Pushing backend image..."
                docker push momin322/airfleet-backend:latest
 
@@ -61,19 +63,21 @@ name: Deploy to Minikube
                kubectl create namespace airfleet || true
 
            - name: Deploy to Minikube
+             working-directory: app
              run: |
                echo "Deploying MongoDB..."
-               kubectl apply -f app/k8s/mongodb-deployment.yaml -n airfleet
-               kubectl apply -f app/k8s/mongodb-service.yaml -n airfleet
+               kubectl apply -f k8s/mongodb-deployment.yaml -n airfleet
+               kubectl apply -f k8s/mongodb-service.yaml -n airfleet
                echo "Deploying backend..."
-               kubectl apply -f app/k8s/backend-deployment.yaml -n airfleet
-               kubectl apply -f app/k8s/backend-service.yaml -n airfleet
+               kubectl apply -f k8s/backend-deployment.yaml -n airfleet
+               kubectl apply -f k8s/backend-service.yaml -n airfleet
                echo "Deploying frontend..."
-               kubectl apply -f app/k8s/frontend-deployment.yaml -n airfleet
-               kubectl apply -f app/k8s/frontend-service.yaml -n airfleet
+               kubectl apply -f k8s/frontend-deployment.yaml -n airfleet
+               kubectl apply -f k8s/frontend-service.yaml -n airfleet
                echo "Deployment completed"
 
            - name: Verify Deployment
+             working-directory: app
              run: |
                echo "Verifying deployments..."
                kubectl get deployments -n airfleet -o wide
