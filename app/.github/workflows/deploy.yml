@@ -1,87 +1,87 @@
 name: Deploy to Minikube
 
-on: [push]
+     on: [push]
 
-jobs:
-  build-and-deploy:
-    runs-on: self-hosted
-    env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      DOCKER_HOST: unix:///var/run/docker.sock
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+     jobs:
+       build-and-deploy:
+         runs-on: self-hosted
+         env:
+           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+           DOCKER_HOST: unix:///var/run/docker.sock
+         steps:
+           - name: Checkout Repository
+             uses: actions/checkout@v4
 
-      - name: Log in to Docker Hub
-        run: |
-          echo "Attempting to log in to Docker Hub..."
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin || {
-            echo "Login failed, retrying after 5 seconds..."
-            sleep 5
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin || {
-              echo "Login failed again, exiting..."
-              exit 1
-            }
-          }
-          echo "Successfully logged in to Docker Hub"
+           - name: Log in to Docker Hub
+             run: |
+               echo "Attempting to log in to Docker Hub..."
+               echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin || {
+                 echo "Login failed, retrying after 5 seconds..."
+                 sleep 5
+                 echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin || {
+                   echo "Login failed again, exiting..."
+                   exit 1
+                 }
+               }
+               echo "Successfully logged in to Docker Hub"
 
-      - name: Set up Docker Environment
-        run: |
-          echo "Setting up Docker environment..."
-          sudo systemctl start docker
-          sudo systemctl enable docker
-          sudo usermod -aG docker $USER || true
-          newgrp docker || true
-          sudo chmod 666 /var/run/docker.sock || true
-          docker info --format '{{.ServerVersion}}' || { echo "Docker daemon not running"; exit 1; }
+           - name: Set up Docker Environment
+             run: |
+               echo "Setting up Docker environment..."
+               sudo systemctl start docker
+               sudo systemctl enable docker
+               sudo usermod -aG docker $USER || true
+               newgrp docker || true
+               sudo chmod 666 /var/run/docker.sock || true
+               docker info --format '{{.ServerVersion}}' || { echo "Docker daemon not running"; exit 1; }
 
-      - name: Build and Push Frontend Image
-        run: |
-          echo "Building frontend image..."
-          docker build -f app/airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
-          echo "Pushing frontend image..."
-          docker push momin322/airfleet-frontend:latest
+           - name: Build and Push Frontend Image
+             run: |
+               echo "Building frontend image..."
+               docker build -f app/airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
+               echo "Pushing frontend image..."
+               docker push momin322/airfleet-frontend:latest
 
-      - name: Build and Push Backend Image
-        run: |
-          echo "Building backend image..."
-          docker build -f app/airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
-          echo "Pushing backend image..."
-          docker push momin322/airfleet-backend:latest
+           - name: Build and Push Backend Image
+             run: |
+               echo "Building backend image..."
+               docker build -f app/airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
+               echo "Pushing backend image..."
+               docker push momin322/airfleet-backend:latest
 
-      - name: Start Minikube
-        run: |
-          echo "Starting Minikube..."
-          minikube start --driver=docker || true
+           - name: Start Minikube
+             run: |
+               echo "Starting Minikube..."
+               minikube start --driver=docker || true
 
-      - name: Ensure Namespace Exists
-        run: |
-          echo "Ensuring airfleet namespace exists..."
-          kubectl create namespace airfleet || true
+           - name: Ensure Namespace Exists
+             run: |
+               echo "Ensuring airfleet namespace exists..."
+               kubectl create namespace airfleet || true
 
-      - name: Deploy to Minikube
-        run: |
-          echo "Deploying MongoDB..."
-          kubectl apply -f app/k8s/mongodb-deployment.yaml -n airfleet
-          kubectl apply -f app/k8s/mongodb-service.yaml -n airfleet
-          echo "Deploying backend..."
-          kubectl apply -f app/k8s/backend-deployment.yaml -n airfleet
-          kubectl apply -f app/k8s/backend-service.yaml -n airfleet
-          echo "Deploying frontend..."
-          kubectl apply -f app/k8s/frontend-deployment.yaml -n airfleet
-          kubectl apply -f app/k8s/frontend-service.yaml -n airfleet
-          echo "Deployment completed"
+           - name: Deploy to Minikube
+             run: |
+               echo "Deploying MongoDB..."
+               kubectl apply -f app/k8s/mongodb-deployment.yaml -n airfleet
+               kubectl apply -f app/k8s/mongodb-service.yaml -n airfleet
+               echo "Deploying backend..."
+               kubectl apply -f app/k8s/backend-deployment.yaml -n airfleet
+               kubectl apply -f app/k8s/backend-service.yaml -n airfleet
+               echo "Deploying frontend..."
+               kubectl apply -f app/k8s/frontend-deployment.yaml -n airfleet
+               kubectl apply -f app/k8s/frontend-service.yaml -n airfleet
+               echo "Deployment completed"
 
-      - name: Verify Deployment
-        run: |
-          echo "Verifying deployments..."
-          kubectl get deployments -n airfleet -o wide
-          echo "Verifying services..."
-          kubectl get services -n airfleet -o wide
+           - name: Verify Deployment
+             run: |
+               echo "Verifying deployments..."
+               kubectl get deployments -n airfleet -o wide
+               echo "Verifying services..."
+               kubectl get services -n airfleet -o wide
 
-      - name: Post Checkout Repository
-        uses: actions/checkout@v4
+           - name: Post Checkout Repository
+             uses: actions/checkout@v4
 
-      - name: Complete Job
-        run: echo "Job completed"
+           - name: Complete Job
+             run: echo "Job completed"
