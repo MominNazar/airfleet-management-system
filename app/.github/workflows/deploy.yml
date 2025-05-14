@@ -40,7 +40,7 @@ name: Deploy to Minikube
              working-directory: app
              run: |
                echo "Building frontend image..."
-               docker build -f airfleet-management/Dockerfile -t momin322/airfleet-frontend:latest .
+               docker build -f airfleet-management/dockerfile -t momin322/airfleet-frontend:latest .
                echo "Pushing frontend image..."
                docker push momin322/airfleet-frontend:latest
 
@@ -48,7 +48,7 @@ name: Deploy to Minikube
              working-directory: app
              run: |
                echo "Building backend image..."
-               docker build -f airfleet-management-backend/Dockerfile -t momin322/airfleet-backend:latest .
+               docker build -f airfleet-management-backend/dockerfile -t momin322/airfleet-backend:latest .
                echo "Pushing backend image..."
                docker push momin322/airfleet-backend:latest
 
